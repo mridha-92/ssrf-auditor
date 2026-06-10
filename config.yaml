@@ -1,0 +1,215 @@
+# SSRF Auditor v2.0 - Configuration
+# =========================================
+
+general:
+  max_threads: 20
+  request_timeout: 30
+  user_agent: "SSRFAudit/2.0 (Security Assessment Tool; +https://github.com/ssrf-auditor)"
+  follow_redirects: true
+  max_redirects: 5
+  verify_ssl: false
+  cookies: {}
+  headers:
+    Accept: "text/html,application/json,application/xml,application/graphql+json,*/*"
+    Accept-Language: "en-US,en;q=0.9"
+  resume: true
+  state_file: "audit_state.json"
+  output_dir: "results"
+
+rate_limiting:
+  enabled: true
+  requests_per_second: 50
+  burst_size: 10
+  delay_between_requests: 0.05
+  max_concurrent_hosts: 10
+
+crawler:
+  max_depth: 3
+  max_pages: 500
+  same_domain_only: true
+  respect_robots_txt: false
+  crawl_delay: 0.1
+  excluded_extensions:
+    - ".jpg"
+    - ".jpeg"
+    - ".png"
+    - ".gif"
+    - ".svg"
+    - ".ico"
+    - ".woff"
+    - ".woff2"
+    - ".ttf"
+    - ".eot"
+    - ".mp4"
+    - ".mp3"
+    - ".avi"
+    - ".mov"
+    - ".pdf"
+    - ".zip"
+    - ".tar"
+    - ".gz"
+    - ".bz2"
+  include_paths: []
+  exclude_paths:
+    - "/logout"
+    - "/signout"
+    - "/exit"
+
+modules:
+  ssrf_discovery:
+    enabled: true
+    depth: 3
+    param_min_length: 3
+    check_get: true
+    check_post: true
+    check_json: true
+    check_xml: true
+    check_graphql: true
+    check_websocket: true
+    confidence_threshold: 0.3
+
+  cloud_metadata:
+    enabled: true
+    check_aws: true
+    check_azure: true
+    check_gcp: true
+    check_oci: true
+    check_aliyun: true
+    check_openstack: true
+    check_digitalocean: true
+    check_cloudflare: true
+
+  infra_disclosure:
+    enabled: true
+    check_private_ips: true
+    check_hostnames: true
+    check_k8s: true
+    check_docker: true
+    check_service_mesh: true
+    check_dns: true
+    check_proxy_headers: true
+    check_backend_tech: true
+    check_cloud_identifiers: true
+    check_cicd: true
+
+  sensitive_files:
+    enabled: true
+    check_config: true
+    check_backups: true
+    check_logs: true
+    check_env: true
+    check_manifests: true
+    check_debug: true
+    pattern_depth: "aggressive"
+
+  js_analysis:
+    enabled: true
+    extract_endpoints: true
+    extract_api_refs: true
+    extract_internal_urls: true
+    extract_cloud_refs: true
+    extract_env_indicators: true
+    min_js_file_size: 1024
+    max_js_file_size: 5242880
+
+  cloud_assets:
+    enabled: true
+    check_s3: true
+    check_azure_storage: true
+    check_gcs: true
+    check_cdn: true
+    check_public_services: true
+    validate_passive: true
+
+  security_headers:
+    enabled: true
+    check_csp: true
+    check_cors: true
+    check_hsts: true
+    check_referrer_policy: true
+    check_permissions_policy: true
+    check_xframe: true
+    check_xxss: true
+    check_xcontent: true
+
+  api_surface:
+    enabled: true
+    check_rest: true
+    check_graphql: true
+    check_openapi: true
+    check_swagger: true
+    check_versioned_apis: true
+    check_websocket_endpoints: true
+    param_discovery: true
+
+exploit:
+  enabled: false
+  dry_run: true
+  max_exploit_depth: 2
+  ssrf_exploit: false
+  auth_bypass: false
+  privilege_esc: false
+  data_extraction: false
+  rce: false
+  destructive: false
+
+  ssrf_config:
+    callback_server: ""
+    callback_port: 8080
+    dns_callback: ""
+    probe_metadata: true
+    probe_internal: true
+    probe_cloud: true
+    payload_based: true
+
+  auth_bypass_config:
+    bruteforce: false
+    session_hijack: false
+    jwt_exploit: false
+    oauth_exploit: false
+
+  privilege_esc_config:
+    horizontal: false
+    vertical: false
+    idor: false
+
+  data_extraction_config:
+    metadata_exfil: false
+    env_exfil: false
+    config_exfil: false
+
+  rce_config:
+    command_injection: false
+    deserialization: false
+    template_injection: false
+
+  destructive_config:
+    data_destruction: false
+    service_disruption: false
+    persistent_access: false
+
+reporting:
+  formats:
+    - html
+    - json
+    - csv
+  executive_summary: true
+  technical_report: true
+  include_raw_findings: true
+  anonymize: false
+  company_name: ""
+  engagement_title: ""
+  color_scheme: "dark"
+
+proxy:
+  http: ""
+  https: ""
+  socks5: ""
+  no_proxy: []
+
+logging:
+  level: "INFO"
+  file: "logs/ssrf-auditor.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  max_size_mb: 100
+  backup_count: 5

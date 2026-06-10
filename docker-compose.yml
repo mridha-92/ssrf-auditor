@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  ssrf-auditor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ssrf-auditor:latest
+    container_name: ssrf-auditor
+    volumes:
+      - ./results:/app/results
+      - ./logs:/app/logs
+      - ./config.yaml:/app/config.yaml:ro
+      - ./urls.txt:/app/urls.txt:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    command: -l /app/urls.txt --all-modules --report html json csv
+    network_mode: "host"
+    restart: "no"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  ssrf-auditor-single:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ssrf-auditor:latest
+    container_name: ssrf-auditor-single
+    volumes:
+      - ./results:/app/results
+      - ./logs:/app/logs
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: -u https://example.com --all-modules --report html json
+    network_mode: "host"
+    restart: "no"
+
+  ssrf-auditor-exploit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ssrf-auditor:latest
+    container_name: ssrf-auditor-exploit
+    profiles:
+      - exploit
+    volumes:
+      - ./results:/app/results
+      - ./logs:/app/logs
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: -u https://target.com --all-modules --exploit --dry-run --report html json
+    network_mode: "host"
+    restart: "no"
